@@ -2,6 +2,9 @@ package server;
 
 import handle.HandClient;
 
+/**
+ * 服务端状态
+ */
 public interface IStateListener {
 
     //某个连接中获取到数据

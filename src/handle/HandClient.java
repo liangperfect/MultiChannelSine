@@ -10,9 +10,10 @@ import java.io.OutputStream;
  * 处理某个连接的客户端
  */
 public class HandClient implements IHandler {
-    IStateListener listener;
-    String imei = "";
-    IClientListener iClientListener;
+    private IStateListener listener;
+    private String imei = "";
+    private IClientListener iClientListener;
+    private volatile int deviceNO=0;
     public HandClient(IStateListener listener,IClientListener iClientListener){
         this.listener = listener;
         this.iClientListener = iClientListener;
@@ -38,10 +39,21 @@ public class HandClient implements IHandler {
             os.write("OK".getBytes());
             listener.onSend(this,"OK".getBytes());
         } catch (IOException e) {
-//            System.out.println("sendHW发送数据的问题");
             listener.onSendError(this,e.getMessage());
             iClientListener.onRemoteDisconnect();
             e.printStackTrace();
         }
+    }
+
+    public void setDeviceNO(int no){
+        this.deviceNO = no;
+    }
+
+    public String getImei() {
+        return imei;
+    }
+
+    public int getDeviceNO() {
+        return deviceNO;
     }
 }
