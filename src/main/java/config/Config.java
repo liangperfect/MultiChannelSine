@@ -8,6 +8,9 @@ import model.GatewayModel;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 设备配置
+ */
 public class Config {
 
     private volatile Container container;

@@ -3,6 +3,7 @@ server/ServerThread$1.class
 server/ServerThread.class
 model/Container.class
 model/DeviceModel.class
+Main$1.class
 server/processor/Processor.class
 server/SocketService.class
 model/GatewayModel.class

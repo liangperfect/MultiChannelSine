@@ -20,17 +20,21 @@ public class HandClient implements IHandler {
     }
 
     @Override
-    public String parseData(InputStream is) {
-        byte[] bytes = new byte[1024];
+    public int parseData(InputStream is) {
+        byte[] bytes = new byte[256];
         try {
-            is.read(bytes);
+            int ret =  is.read(bytes);
+            if(ret == -1){
+                listener.onParseError(this,"解析数据失败");
+                return -1;
+            }
             listener.onReceive(this,bytes);
+            return 1;
         } catch (IOException e) {
             listener.onParseError(this,e.getMessage());
             e.printStackTrace();
         }
-        String ret = new String(bytes);
-        return ret;
+        return -1;
     }
 
     @Override

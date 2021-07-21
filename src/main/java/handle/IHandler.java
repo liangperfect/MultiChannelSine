@@ -8,9 +8,16 @@ import java.io.OutputStream;
  */
 public interface IHandler {
 
-    //解析从硬件返回的数据
-    String parseData(InputStream is);
+    /**
+     * 解析数据
+     * @param is 输入流
+     * @return -1解析失败
+     */
+    int parseData(InputStream is);
 
-    //向硬件发送数据请求
+    /**
+     * 向硬件发送数据
+     * @param os 输出流
+     */
     void sendHW(OutputStream os);
 }

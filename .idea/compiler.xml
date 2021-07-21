@@ -6,11 +6,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="ningbo" />
+        <module name="release" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="ningbo" target="1.8" />
+      <module name="release" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
