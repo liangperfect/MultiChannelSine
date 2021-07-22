@@ -10,6 +10,7 @@ public interface IHandler {
 
     /**
      * 解析数据
+     *
      * @param is 输入流
      * @return -1解析失败
      */
@@ -17,7 +18,9 @@ public interface IHandler {
 
     /**
      * 向硬件发送数据
-     * @param os 输出流
+     *
+     * @param os
+     * @return true 发送完一轮请求  fasle 未发送完一轮请求
      */
-    void sendHW(OutputStream os);
+    boolean sendHW(OutputStream os);
 }

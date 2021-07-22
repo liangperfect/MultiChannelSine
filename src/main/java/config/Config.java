@@ -7,6 +7,7 @@ import model.GatewayModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * 设备配置
@@ -40,13 +41,21 @@ public class Config {
 
     /**
      * 根据网关imei获取下面的设备列表
+     *
      * @param imei
      * @return
      */
     public List<DeviceModel> getDevicesByImei(String imei) {
 
-        GatewayModel gm = (GatewayModel) container.getDatas().stream().filter(gatewayModel -> gatewayModel.getImei() == imei);
-        return gm.getDevices();
+//        GatewayModel gm = (GatewayModel) container.getDatas().stream().filter(gatewayModel -> gatewayModel.getImei() == imei);
+        for (int i = 0; i < container.getDatas().size(); i++) {
+            if (container.getDatas().get(i).getImei().equals(imei)) {
+                System.out.println("有该imei号的");
+                return container.getDatas().get(i).getDevices();
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -59,47 +68,26 @@ public class Config {
         return imeiArr;
     }
 
-    public String datas = "{\n" +
+    private String datas = "{\n" +
             "  \"datas\": [\n" +
             "    {\n" +
-            "      \"imei\": \"111\",\n" +
+            "      \"imei\": \"868221049924056\",\n" +
             "      \"devices\": [\n" +
             "        {\n" +
             "          \"addrDev\": \"01\",\n" +
-            "          \"channels\": [\n" +
-            "            \"01\",\n" +
-            "            \"02\",\n" +
-            "            \"03\",\n" +
-            "            \"04\"\n" +
-            "          ]\n" +
-            "        }\n" +
-            "      ]\n" +
-            "    },\n" +
-            "    {\n" +
-            "      \"imei\": \"222\",\n" +
-            "      \"devices\": [\n" +
-            "        {\n" +
-            "          \"addrDev\": \"01\",\n" +
-            "          \"channels\": [\n" +
-            "            \"01\",\n" +
-            "            \"02\",\n" +
-            "            \"03\",\n" +
-            "            \"04\"\n" +
-            "          ]\n" +
-            "        },\n" +
-            "        {\n" +
-            "          \"addrDev\": \"02\",\n" +
             "          \"channels\": [\n" +
             "            \"01\",\n" +
             "            \"02\",\n" +
             "            \"03\",\n" +
             "            \"04\",\n" +
-            "            \"05\"\n" +
+            "            \"05\",\n" +
+            "            \"06\",\n" +
+            "            \"07\",\n" +
+            "            \"08\"\n" +
             "          ]\n" +
             "        }\n" +
             "      ]\n" +
             "    }\n" +
             "  ]\n" +
             "}";
-
 }

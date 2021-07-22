@@ -36,7 +36,6 @@ public class ServerThread extends Thread implements IClientListener {
     public void run() {
         try {
             while (true) {
-                //解析从硬件来的数据
                 int ret = handler.parseData(socket.getInputStream());
                 if (ret == -1) {
                     break;

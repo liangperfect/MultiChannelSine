@@ -33,7 +33,7 @@ public class SocketService implements ISocketService {
 
         try {
             while (true){
-                socket = serverSocket.accept();//与硬件建立一个连接
+                socket = serverSocket.accept();
                 ServerThread st = new ServerThread(socket,listener);
                 st.start();
             }
