@@ -60,7 +60,9 @@ public class HandClient implements IHandler {
             if (channelIndex > currChanMaxIndex) {
                 deviceIndex = deviceIndex + 1;
                 channelIndex = 0;
-                currChanMaxIndex = this.devices.get(deviceIndex).getChannels().size() - 1;
+                if (deviceIndex <= deviceMaxIndex) {
+                    currChanMaxIndex = this.devices.get(deviceIndex).getChannels().size() - 1;
+                }
                 return false;
             }
 
@@ -72,7 +74,8 @@ public class HandClient implements IHandler {
             }
             String deviceAddr = devices.get(deviceIndex).getAddrDev();
             String channelAddr = devices.get(deviceIndex).getChannels().get(channelIndex);
-            String sendStr = "4843" + "00" + deviceAddr + "0000" + "01" + channelAddr + "0000000000" + "8CA7AF";
+            String sendStr = "4843" + "00" + deviceAddr + "0000" + "01" + channelAddr + "0000000000";
+            sendStr = Utils.addCrcString(sendStr) + "AF";
             byte[] sendByte = Utils.hexStringToByteArray(sendStr);
             os.write(sendByte);
             channelIndex = channelIndex + 1;
@@ -110,6 +113,7 @@ public class HandClient implements IHandler {
         String packHeader = hexStr.substring(0, 4);
         if (packHeader.equals("4141")) {
             //接收到心跳包
+            System.out.println("接收到心跳包");
             return 1;
         }
 
@@ -175,6 +179,7 @@ public class HandClient implements IHandler {
         String time = realStr.substring(32, 44);//时间
         String crc = realStr.substring(44, 48);//crc校验码
         String end = realStr.substring(48, 50);//包尾
+        System.out.println("收到到包数据->" + realStr);
     }
 
 

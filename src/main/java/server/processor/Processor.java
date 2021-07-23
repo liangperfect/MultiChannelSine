@@ -5,6 +5,7 @@ import server.ServerConfig;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Date;
 import java.util.Timer;
 
 /**
@@ -20,6 +21,7 @@ public class Processor {
     private volatile int deviceNo = 0; //一个网关下面到设备地址一般都是1-10
     private volatile int isRecv = 0; //0未收到数据，1收到数据
     private volatile int isStart = ServerConfig.PROCESSOR_PAUSE;//0未开始  1开始
+    private volatile boolean startSend = false;//是否开始发送消息请求
 
     public Processor(Socket socket, HandClient handler, Timer timer) {
         this.socket = socket;
@@ -31,33 +33,41 @@ public class Processor {
         if (isStart == ServerConfig.PROCESSOR_START) {
             timeTick = timeTick + 1;
             heartTime = heartTime + 1;
-            System.out.println("timeTick:" + timeTick + " ---- " + "  heartTime:" + heartTime + " ---- " + "   deviceNo:" + deviceNo);
-            if (heartTime != ServerConfig.HEARTTIME_TIMEOUT_IDLE && heartTime != ServerConfig.HEARTTIME_TIMEOUT) {
-                //心跳未超时
-                if (timeTick == ServerConfig.TIMEOUT || isRecv == 1) {//6秒都没接收到数据就发下一个通道到
-                    //查询的一轮里面
-                    try {
 
-                        timeTick = 0;//重新判断6秒
-                        isRecv = ServerConfig.PROCESSOR_NO_HAS_RECV;
-//                        deviceNo = deviceNo + 1;//发送一次就是一轮中的一次
-//                        handler.setDeviceNO(deviceNo);
-//                        if (deviceNo == ServerConfig.MAXDEVICENO) {
-//                            //一轮已经完成了
-//                            deviceNo = 0;//又从第一个设备的第一个通道开始请求数据
-//                            timeTick = -ServerConfig.TIMEINTERVAL;//如果当前链接没有断到话，下轮发送到时间
-//                        }
-                        if (handler.sendHW(socket.getOutputStream())) {
-                            timeTick = -ServerConfig.TIMEINTERVAL;
-                        }
-                    } catch (IOException e) {
+            if (!startSend) {
+                Date d = new Date();
+                int hour = d.getHours();
+                int minute = d.getMinutes();
+                int seconds = d.getSeconds();
+                int totalSeconds = hour * 60 * 60 + minute * 60 + seconds;
+                int duration = ServerConfig.TIMEINTERVAL * 60;//每隔10分钟开始获取一次数据
+                if (totalSeconds % duration == 0) {
+                    startSend = true;
+                }
+            }
+            System.out.println("timeTick:" + timeTick + " ---- " + "  heartTime:" + heartTime);
+            if (heartTime != ServerConfig.HEARTTIME_TIMEOUT) {
+                //心跳未超时
+                if (startSend) {
+                    if (timeTick == ServerConfig.TIMEOUT || isRecv == 1) {//6秒都没接收到数据就发下一个通道到
+                        //查询的一轮里面
                         try {
-                            timer.cancel();
-                            socket.close();
-                        } catch (IOException ioException) {
-                            ioException.printStackTrace();
+                            timeTick = 0;//重新判断6秒
+                            isRecv = ServerConfig.PROCESSOR_NO_HAS_RECV;
+                            if (handler.sendHW(socket.getOutputStream())) {
+                                //发送完一轮了
+                                timeTick = 0;
+                                startSend = false;
+                            }
+                        } catch (IOException e) {
+                            try {
+                                timer.cancel();
+                                socket.close();
+                            } catch (IOException ioException) {
+                                ioException.printStackTrace();
+                            }
+                            e.printStackTrace();
                         }
-                        e.printStackTrace();
                     }
                 }
             } else {
