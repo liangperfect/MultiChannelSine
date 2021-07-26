@@ -4,6 +4,7 @@ import config.Config;
 import config.Utils;
 import model.DeviceModel;
 import server.IStateListener;
+import server.ServerConfig;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 数据解析与发送
+ * 数据解析与发送处理
  */
 public class HandClient implements IHandler {
     private IStateListener listener;
@@ -67,7 +68,7 @@ public class HandClient implements IHandler {
             }
 
             if (deviceIndex > deviceMaxIndex) {
-                //发送完一轮了
+                //设备遍历完成
                 deviceIndex = 0;
                 channelIndex = 0;
                 return true;
@@ -101,9 +102,9 @@ public class HandClient implements IHandler {
     }
 
     /**
-     * 分析数据包
+     * 解析数据包
      */
-    public int analysisData(byte[] bytes) {
+    private int analysisData(byte[] bytes) {
 
         if (!validImei() || bytes == null || bytes.length == 0) {
             return -1;
@@ -111,20 +112,18 @@ public class HandClient implements IHandler {
 
         String hexStr = Utils.ByteArraytoHex(bytes);
         String packHeader = hexStr.substring(0, 4);
-        if (packHeader.equals("4141")) {
+        if (packHeader.equals(ServerConfig.PACKAGE_HEARTTIME_HEADER)) {
             //接收到心跳包
             System.out.println("接收到心跳包");
             return 1;
         }
 
-        if (packHeader.equals("4843")) {
+        if (packHeader.equals(ServerConfig.PACKAGE_DATA_HEADER)) {
             //通道实际数据解析
-            //System.out.println("请求到到数据是->" + hexStr);
-//            System.out.println("收到到正式数据包是->" + hexStr);
             analysisRealPack(hexStr);
         }
 
-        if (packHeader.equals("4040")) {
+        if (packHeader.equals(ServerConfig.PACKAGE_REGISTER_HEADER)) {
             //解析注册包
             int ret = analysisRegisterPack(hexStr);
             return ret;
@@ -189,7 +188,6 @@ public class HandClient implements IHandler {
      * @return
      */
     public boolean validImei() {
-
 
         return true;
     }

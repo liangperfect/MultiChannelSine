@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.Timer;
 
 /**
- * 业务状态处理器
+ * 业务到时间片段处理器
  */
 public class Processor {
 
@@ -42,6 +42,7 @@ public class Processor {
                 int totalSeconds = hour * 60 * 60 + minute * 60 + seconds;
                 int duration = ServerConfig.TIMEINTERVAL * 60;//每隔10分钟开始获取一次数据
                 if (totalSeconds % duration == 0) {
+                    //当前设备到达某一时刻即可发送消息
                     startSend = true;
                 }
             }
@@ -52,11 +53,12 @@ public class Processor {
                     if (timeTick == ServerConfig.TIMEOUT || isRecv == 1) {//6秒都没接收到数据就发下一个通道到
                         //查询的一轮里面
                         try {
-                            timeTick = 0;//重新判断6秒
+                            timeTick = 0;//重置时间
                             isRecv = ServerConfig.PROCESSOR_NO_HAS_RECV;
                             if (handler.sendHW(socket.getOutputStream())) {
                                 //发送完一轮了
                                 timeTick = 0;
+                                //等待下一刻再发送消息
                                 startSend = false;
                             }
                         } catch (IOException e) {
@@ -83,7 +85,7 @@ public class Processor {
     }
 
     /**
-     * 重置心跳监听事件
+     * 重置心跳监听时间
      */
     public void resetHeartTime() {
         this.heartTime = 0;

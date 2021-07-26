@@ -12,7 +12,7 @@ public interface IHandler {
      * 解析数据
      *
      * @param is 输入流
-     * @return -1解析失败
+     * @return -1解析失败  1解析成功
      */
     int parseData(InputStream is);
 
